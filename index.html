@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ตรวจถังดับเพลิง</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C62828">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ตรวจถัง">
+<style>
+:root{--bg:#EFF0EC;--ink:#1B2430;--mute:#5B6573;--red:#C62828;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,'Noto Sans Thai',sans-serif;display:flex;flex-direction:column}
+header{background:var(--red);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+header h1{margin:0;font-size:20px}
+main{flex:1;max-width:520px;width:100%;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:8px;padding:16px;margin-bottom:16px}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:8px;padding:16px;font:inherit;font-size:18px;font-weight:700;background:var(--red);color:#fff;min-height:56px}
+.btn.alt{background:#fff;color:var(--ink);border:2px solid var(--ink);margin-top:12px;font-size:16px}
+.hide{display:none}
+.status{color:var(--mute);font-size:14px}
+</style>
+</head>
+<body>
+<header><h1>ตรวจถังดับเพลิง</h1></header>
+<main>
+  <div class="card">
+    <p>กดปุ่มด้านล่างเพื่อเข้าสู่แอปตรวจถัง (ต้องมีอินเทอร์เน็ตและล็อกอิน Google)</p>
+    <a class="btn" id="open" href="#">เปิดแอปตรวจถัง</a>
+    <button class="btn alt hide" id="install">ติดตั้งแอปบนเครื่องนี้</button>
+  </div>
+  <p class="status" id="net"></p>
+</main>
+<script>
+// ใส่ลิงก์เว็บแอป Apps Script (ลงท้าย /exec) ระหว่างเครื่องหมายคำพูด
+const APP_URL = 'https://script.google.com/macros/s/AKfycbzWkLbz2ZC8-Ai2_p0cNmYH7zdQRprJ8DWxQLnelL44WZD_XnjDpvuBizMXwUfUivSF/exec';
+const open_ = document.getElementById('open');
+if (APP_URL.startsWith('https://')) open_.href = APP_URL;
+else { open_.textContent = 'ยังไม่ได้ใส่ลิงก์แอป (แก้ APP_URL ในไฟล์ index.html)'; open_.style.background = '#5B6573'; }
+
+// ปุ่มติดตั้ง (Android/Chrome/Edge) iPhone ใช้ Share → เพิ่มไปยังหน้าจอโฮม
+let deferred = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; document.getElementById('install').classList.remove('hide'); });
+document.getElementById('install').onclick = async () => { if (deferred) { deferred.prompt(); deferred = null; document.getElementById('install').classList.add('hide'); } };
+
+// สถานะอินเทอร์เน็ต
+const net = document.getElementById('net');
+const upd = () => net.textContent = navigator.onLine ? '' : 'ตอนนี้ไม่มีอินเทอร์เน็ต หน้านี้เปิดได้ แต่แอปตรวจถังต้องใช้เน็ต';
+addEventListener('online', upd); addEventListener('offline', upd); upd();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
