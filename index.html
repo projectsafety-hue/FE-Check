@@ -130,7 +130,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const START = new URLSearchParams(window.location.search).get('id') || '';
+const START = <?!= JSON.stringify(startId) ?>;
 const ITEMS = [
   ['Gauge','เข็มเกจอยู่ในโซนสีเขียว'],
   ['PinSeal','สลักและซีลครบ'],
@@ -143,7 +143,6 @@ const LABEL = {ok:'ปกติ',soon:'ใกล้ครบกำหนด',ove
 const isCO2 = x => /co2|co₂/i.test(String(x && x.type));
 const VIEWS = ['home','form','admin','qr'];
 let DATA = {list:[],counts:{},role:'',appUrl:''}, cur = null, answers = {}, photo = '', editing = null;
-
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
